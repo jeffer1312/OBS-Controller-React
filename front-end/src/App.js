@@ -1,18 +1,11 @@
 //import React from 'react';
-import React  from 'react';
-import Obs from './components/obs'
+import React from "react";
+import Routes from "./routes";
 //import api from './services/api'
 //import Scenes from './components/scenes'
 
-function App() { 
-  
-  
-  return (
-    
-    <div className="App">     
-      <Obs></Obs>  
-    </div>
-  );
+function App() {
+  return <Routes />;
 }
 
 export default App;
