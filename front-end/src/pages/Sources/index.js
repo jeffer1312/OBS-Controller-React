@@ -8,15 +8,15 @@ export default function Sources(props) {
   const sourcesJson = localStorage.getItem("scene");
   const sources = JSON.parse(sourcesJson);
   const [type, setType] = useState("");
-  const mapSource = sources.map(source => source.render);
+  const mapSource = sources.map((source) => source.render);
   const [sourceRender, setSourceRender] = useState(mapSource);
   //console.log(sourceRender);
 
   //ativar ou desativar a fonte
   async function res(source) {
-    const response = await api.post("/obs", {
+    const response = await api.put("/render", {
       sourceName: source.name,
-      visible: !sourceRender
+      visible: !sourceRender,
     });
 
     // setType(response.map(visible => visible));
@@ -25,7 +25,7 @@ export default function Sources(props) {
     setSourceRender(await response.data.visible);
   }
   function teste(sourcefunc) {
-    const teste = sources.map(source => {
+    const teste = sources.map((source) => {
       return source.name === sourcefunc.name
         ? { ...source.name, render: !source.render }
         : source;
@@ -43,16 +43,17 @@ export default function Sources(props) {
     <Container>
       {/* <SourcesDiv> */}
       <>
-        {sources.map(source => (
+        {sources.map((source) => (
           <Button
-            type='sources'
-            className='btn-scenes'
+            type="sources"
+            className="btn-scenes"
             key={source.name}
-            onClick={() => res(source)}>
+            onClick={() => res(source)}
+          >
             {source.name}
           </Button>
         ))}
-        <Link to='/'>Voltar</Link>
+        <Link to="/">Voltar</Link>
       </>
       {/* </SourcesDiv> */}
     </Container>

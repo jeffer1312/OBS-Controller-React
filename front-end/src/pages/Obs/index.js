@@ -7,9 +7,17 @@ import "./styles.css";
 export default function Obs() {
   const [scenes, setScenes] = useState([]);
   const [currentScene, setCurrentScene] = useState([]);
+  const [transmissaoOn, setTransmissaoOn] = useState(false);
 
   const history = useHistory();
-
+  async function startStreaming(on) {
+    const res = await api.post("/start", { start: on });
+    if (res.data.message === "Transmissao iniciada") {
+      setTransmissaoOn(true);
+    } else {
+      setTransmissaoOn(false);
+    }
+  }
   async function loadData() {
     try {
       const res = await api.get(`/obs`);
@@ -44,19 +52,29 @@ export default function Obs() {
   }, [currentScene]);
 
   return (
-    <div className='container'>
+    <div className="container">
       <h1> Cenas </h1>
-      <div className='scenes'>
-        {scenes.map(scene => (
+      <div className="scenes">
+        {scenes.map((scene) => (
           <button
-            className='btn-scenes'
+            className="btn-scenes"
             key={scene.name}
             onClick={() => {
               switchScenes(scene);
-            }}>
+            }}
+          >
             {scene.name}
           </button>
         ))}
+      </div>
+
+      <div className="transmissao">
+        <button className="btn-streaming" onClick={() => startStreaming(true)}>
+          Iniciar Trasmissao
+        </button>
+        <button className="btn-streaming" onClick={() => startStreaming(false)}>
+          Parar Trasmissao
+        </button>
       </div>
     </div>
   );
