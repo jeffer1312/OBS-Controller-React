@@ -6,11 +6,20 @@
 
 html,
 body {
-  height: 100%;
-  background: #ccc;
+  width: 100vw;
+  height: 100vh;
+  background-color: #183642;
 }
+/* .selected {
+  border: solid 5px green;
+  -webkit-box-shadow: 0px 0px 10px 2px rgba(30, 160, 240, 1);
+  -moz-box-shadow: 0px 0px 10px 2px rgba(30, 160, 240, 1);
+  box-shadow: 0px 0px 10px 2px rgba(30, 160, 240, 1);
+  height: 220px;
+  width: 220px;
+} */
 
-.container {
+/* .container {
   margin: 0 auto;
   max-width: 1280px;
   padding: 0 2%;
@@ -51,6 +60,10 @@ h1 {
   border-radius: 50px;
   margin: 10px;
   color: white;
+  -webkit-border-radius: 50px;
+  -moz-border-radius: 50px;
+  -ms-border-radius: 50px;
+  -o-border-radius: 50px;
 }
 .transmissao {
   padding-top: 30px;
@@ -83,4 +96,4 @@ h1 {
     height: 100px;
     border-radius: 30px;
   }
-}
+} */
