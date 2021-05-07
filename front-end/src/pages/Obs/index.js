@@ -1,6 +1,6 @@
 /************IMPORTAÇOES ********************/
-import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { link } from 'next/link';
 import {
   Container,
   Footer,
@@ -13,18 +13,18 @@ import {
   KeyButton,
   InputKey,
   ContainerStream,
-} from "./styles";
-import { FadeOutUp } from "animate-css-styled-components";
-import api from "../../services/api.js";
+} from './styles';
+import { FadeOutUp } from 'animate-css-styled-components';
+import api from '../../services/api.js';
 /************FIM DAS IMPORTAÇOES ********************/
 
 export default function Obs() {
-  const history = useHistory();
+  //const router = useRouter();
   /*************** VARIAVEIS DE ESTADO **********************/
 
   const [scenes, setScenes] = useState([]);
   const [streaming, setStreaming] = useState({});
-  const [streamTimeCode, setStreamTimeCode] = useState("");
+  const [streamTimeCode, setStreamTimeCode] = useState('');
   const [keyStream, setKeyStream] = useState();
   const [settings, setSettings] = useState({});
 
@@ -34,8 +34,8 @@ export default function Obs() {
   /*************** FUNÇOES DA API**********************/
 
   async function startStreaming(on) {
-    const res = await api.post("/start", { start: on });
-    if (res.data.message === "Transmissao iniciada") {
+    const res = await api.post('/start', { start: on });
+    if (res.data.message === 'Transmissao iniciada') {
       setTransmissaoOn(true);
     } else {
       setTransmissaoOn(false);
@@ -43,10 +43,10 @@ export default function Obs() {
     statusStreaming();
   }
   async function keySettings() {
-    await api.post("/settings", { key: keyStream });
+    await api.post('/settings', { key: keyStream });
   }
   async function GetkeySettings() {
-    const res = await api.get("/settings");
+    const res = await api.get('/settings');
     setSettings(res.data.data.settings);
   }
   async function loadData() {
@@ -62,28 +62,28 @@ export default function Obs() {
   }
 
   async function switchScenes(scene) {
-    await api.put("/obs", { sceneName: scene.name });
+    await api.put('/obs', { sceneName: scene.name });
     setCurrentScene(scene.name);
 
     if (scene.sources > []) {
       const sceneJson = JSON.stringify(scene.sources);
       const sceneName = JSON.stringify(scene.name);
 
-      localStorage.setItem("scene", sceneJson);
-      localStorage.setItem("sceneName", sceneName);
-      history.push("/sources");
+      localStorage.setItem('scene', sceneJson);
+      localStorage.setItem('sceneName', sceneName);
+      // router.push('/sources');
     } else {
-      console.log("sources vazio");
+      console.log('sources vazio');
     }
   }
   async function statusStreaming() {
-    const res = await api.get("/status");
+    const res = await api.get('/status');
     const { streaming } = res.data.data;
 
     setStreaming(streaming);
   }
   async function TimeStreaming() {
-    const res = await api.get("/status");
+    const res = await api.get('/status');
     const { streamTimecode } = res.data.data;
 
     setStreamTimeCode(streamTimecode);
@@ -134,11 +134,11 @@ export default function Obs() {
   return (
     <>
       <Container>
-        <FadeOutUp duration="0.8s" delay="0.4s">
+        <FadeOutUp duration='0.8s' delay='0.4s'>
           <Title> Cenas </Title>
         </FadeOutUp>
         <Scenes>
-          {scenes.map((scene) => (
+          {scenes.map(scene => (
             <Button
               active={currentScene === scene.name}
               key={scene.name}
@@ -154,7 +154,7 @@ export default function Obs() {
       <ContainerStream>
         <KeyButton onClick={handleKeyPost}>Trocar Chave de Stream</KeyButton>
         <InputKey
-          type="text"
+          type='text'
           placeholder={settings.key}
           onChange={handleChange}
         />

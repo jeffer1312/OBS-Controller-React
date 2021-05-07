@@ -9,18 +9,17 @@
         "animate-css-styled-components": "^1.0.2",
         "axios": "^0.19.2",
         "create-react-class": "^15.6.3",
+        "next": "^10.2.0",
         "obs-websocket-js": "^4.0.1",
-        "react": "^16.12.0",
-        "react-dom": "^16.12.0",
-        "react-router-dom": "^5.1.2",
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2",
         "react-scripts": "3.3.1",
         "styled-components": "^5.0.1"
     },
     "scripts": {
-        "start": "react-scripts start",
-        "build": "react-scripts build",
-        "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start"
     },
     "eslintConfig": {
         "extends": "react-app"

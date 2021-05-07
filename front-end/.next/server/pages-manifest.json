@@ -1,0 +1,9 @@
+{
+  "/Obs": "pages/Obs.js",
+  "/Obs/styles": "pages/Obs/styles.js",
+  "/Sources": "pages/Sources.js",
+  "/Sources/styles": "pages/Sources/styles.js",
+  "/_app": "pages/_app.js",
+  "/_error": "pages/_error.js",
+  "/_document": "pages/_document.js"
+}
