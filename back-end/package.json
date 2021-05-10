@@ -6,7 +6,7 @@
     "dependencies": {
         "cors": "^2.8.5",
         "express": "^4.17.1",
-        "obs-websocket-js": "^4.0.1"
+        "obs-websocket-js": "^4.0.2"
     },
     "scripts": {
         "dev": "nodemon server.js"

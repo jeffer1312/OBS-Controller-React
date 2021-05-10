@@ -1,32 +1,40 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import {
-  Container,
-  Flex,
-  Button,
-  Text,
-  Box,
-  Grid,
-  GridItem,
-  Input,
-} from '@chakra-ui/react';
+import { Flex, Button, Text, Input } from '@chakra-ui/react';
 //import { FadeOutUp } from 'animate-css-styled-components';
 import apiobs from './api/apiobs';
+import Modal, {
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useModal,
+} from './_modal.tsx';
+import axios from 'axios';
 /************FIM DAS IMPORTAÇOES ********************/
 
 export default function Obs() {
+  const { isShowing, toggle } = useModal();
   const router = useRouter();
   /*************** VARIAVEIS DE ESTADO **********************/
 
   const [scenes, setScenes] = useState([]);
+  const [scenesSource, setscenesSource] = useState([]);
+  const [sources, setSources] = useState([]);
   const [streaming, setStreaming] = useState({});
+  const [sourceNames, setSourceNames] = useState({});
+
   const [streamTimeCode, setStreamTimeCode] = useState('');
   const [keyStream, setKeyStream] = useState();
   const [settings, setSettings] = useState({});
 
   const [currentScene, setCurrentScene] = useState([]);
   const [transmissaoOn, setTransmissaoOn] = useState();
+  const [LoadModal, SetLoadModal] = useState(false);
 
+  // const mapSource = sources.map(source =>
+  //   source.render === true ? source.name : ''
+  // );
+  const [visibleSources, setVisibleSources] = useState();
   /*************** FUNÇOES DA API**********************/
 
   async function startStreaming(on) {
@@ -57,6 +65,28 @@ export default function Obs() {
     }
   }
 
+  async function res(source) {
+    await apiobs.put('/render', {
+      sourceName: source.name,
+      visible: !source.render,
+    });
+
+    handleVisibleSource(source);
+  }
+  function handleVisibleSource(source) {
+    const alredySelected = visibleSources.findIndex(
+      item => item === source.name
+    );
+
+    if (alredySelected >= 0) {
+      const filteredSources = visibleSources.filter(
+        item => item !== source.name
+      );
+      setVisibleSources(filteredSources);
+    } else {
+      setVisibleSources([...visibleSources, source.name]);
+    }
+  }
   async function switchScenes(scene) {
     await apiobs.put('/obs', { sceneName: scene.name });
     setCurrentScene(scene.name);
@@ -67,7 +97,11 @@ export default function Obs() {
 
       localStorage.setItem('scene', sceneJson);
       localStorage.setItem('sceneName', sceneName);
-      router.push('/sources');
+      setSources(scene.sources);
+      setSourceNames(scene.name);
+      SetLoadModal(true);
+      toggle();
+      // router.push('/sources');
     } else {
       console.log('sources vazio');
     }
@@ -106,6 +140,7 @@ export default function Obs() {
       return <span>Parado</span>;
     }
   }
+
   /***************  HOOKS **********************/
 
   useEffect(() => {
@@ -125,16 +160,79 @@ export default function Obs() {
     statusStreaming();
   }, [transmissaoOn]);
 
+  useEffect(() => {
+    const source = axios.CancelToken.source();
+    async function loadDataSources() {
+      try {
+        const res = await apiobs.get(`/obs`, { cancelToken: source.token });
+        const { scenes } = res.data;
+        const filteredScenes = scenes.filter(item => item.name === sourceNames);
+        const sources =
+          filteredScenes[0] !== undefined ? filteredScenes[0].sources : [];
+        setscenesSource(sources);
+        const mapSource = sources.map(source =>
+          source.render === true ? source.name : ''
+        );
+        setVisibleSources(mapSource);
+      } catch (error) {
+        if (axios.isCancel(error)) {
+          console.log('canceled');
+        } else {
+          throw error;
+        }
+      }
+    }
+    loadDataSources();
+    return () => {
+      source.cancel();
+    };
+    //console.log(`sourcerjson${mapSource}`);
+  }, [LoadModal]);
+
   /***************  HOOKS **********************/
 
   return (
     <>
+      <Modal {...{ isShowing, toggle }}>
+        <ModalHeader {...{ toggle }}>Fontes Do OBS</ModalHeader>
+        <ModalBody>
+          <Flex
+            flexWrap='wrap'
+            justifyContent='center'
+            width='100%'
+            gridArea='buttonCenas'
+          >
+            {scenesSource.map(source => (
+              <Button
+                height='250px'
+                width='250px'
+                borderRadius='125px'
+                margin='2%'
+                border={
+                  visibleSources.includes(source.name)
+                    ? '8px solid #1fc8db'
+                    : '8px solid #f00'
+                }
+                key={source.name}
+                onClick={() => res(source)}
+              >
+                {source.name}
+              </Button>
+            ))}
+          </Flex>
+        </ModalBody>
+        <ModalFooter>
+          <button onClick={toggle}>Cancel</button>
+        </ModalFooter>
+      </Modal>
+
       <Flex gridArea='titleCena' flexDir='column'>
         <Flex justifyContent='center' width='100%' duration='0.8s' delay='0.4s'>
           <Text> Cenas </Text>
         </Flex>
         <Flex
           flexWrap='wrap'
+          marginTop='6%'
           justifyContent='center'
           width='100%'
           gridArea='buttonCenas'
@@ -145,6 +243,11 @@ export default function Obs() {
               width='200px'
               borderRadius='100px'
               margin='2%'
+              border={
+                currentScene === scene.name
+                  ? '8px solid #1fc8db'
+                  : '8px solid #f00'
+              }
               // active={currentScene === scene.name}
               key={scene.name}
               onClick={() => {
@@ -187,7 +290,9 @@ export default function Obs() {
               Parar Transmissao
             </Button>
           </Flex>
-          {TimeClock()}
+          <Flex flexDirection='column' justifyContent='center'>
+            <Flex justifyContent='center'>{TimeClock()}</Flex>
+          </Flex>
         </Flex>
       </Flex>
     </>

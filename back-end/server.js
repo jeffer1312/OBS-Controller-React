@@ -1,41 +1,55 @@
-const express = require("express");
-const OBSWebSocket = require("obs-websocket-js");
-const cors = require("cors");
+const express = require('express');
+const OBSWebSocket = require('obs-websocket-js');
+const cors = require('cors');
 const obs = new OBSWebSocket();
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const turnOn = obs.connect({
-  address: "localhost:4444",
-  password: "1312911415",
-});
+const turnOn = obs
+  .connect({
+    address: 'localhost:4444',
+    password: '1312911415',
+  })
+  .catch(error => {
+    console.error(error);
+  });
 
 const Dados = {
   async index(req, res) {
     await turnOn
       .then(() => {
-        obs.send("GetSceneList").then((data) => {
+        obs.send('GetSceneList').then(data => {
           return res.json(data);
         });
       })
       .catch(() => {
-        console.log("promisse rejected");
+        console.log('promisse rejected');
       });
   },
+  async Audios(req, res) {
+    let { source, mute } = req.body;
+    obs.sendCallback(
+      'GetSourceDefaultSettings',
+      { sourceKind: source },
+      (err, data) => {
+        return res.json({ data });
+      }
+    );
+  },
   async update(req, res) {
-    obs.sendCallback("GetSceneList", {}, (err, data) => {
+    obs.sendCallback('GetSceneList', {}, (err, data) => {
       const { sceneName } = req.body;
-      if (sceneName !== data["current-scene"]) {
+      if (sceneName !== data['current-scene']) {
         obs.send(
-          "SetCurrentScene",
+          'SetCurrentScene',
           {
-            "scene-name": sceneName,
+            'scene-name': sceneName,
           },
           res.json(sceneName)
         );
       } else {
-        return res.json({ Cena: "cena Ja e a Atual" });
+        return res.json({ Cena: 'cena Ja e a Atual' });
       }
     });
   },
@@ -45,7 +59,7 @@ const Dados = {
 
     turnOn.then(() => {
       obs.send(
-        "SetSceneItemProperties",
+        'SetSceneItemProperties',
         {
           item: sourceName,
           visible: visible,
@@ -57,43 +71,44 @@ const Dados = {
   async start(req, res) {
     const { start } = req.body;
     if (start === true) {
-      obs.sendCallback("StartStreaming", (error) => {
+      obs.sendCallback('StartStreaming', error => {
         if (!error) {
-          return res.json({ message: "Transmissao iniciada" });
+          return res.json({ message: 'Transmissao iniciada' });
         } else {
           return res.json(error);
         }
       });
     } else {
-      obs.sendCallback("StopStreaming", (error) => {
-        return res.json({ message: "Transmissao encerada" });
+      obs.sendCallback('StopStreaming', error => {
+        return res.json({ message: 'Transmissao encerada' });
       });
     }
   },
   async status(req, res) {
-    obs.sendCallback("GetStreamingStatus", {}, (error, data) => {
+    obs.sendCallback('GetStreamingStatus', {}, (error, data) => {
       return res.json({ data });
     });
   },
   async GetStreamSettings(req, res) {
-    obs.sendCallback("GetStreamSettings", {}, (error, data) => {
+    obs.sendCallback('GetStreamSettings', {}, (error, data) => {
       return res.json({ data });
     });
   },
   async SetStreamSettings(req, res) {
     const key = req.body;
-    obs.sendCallback("SetStreamSettings", { settings: key }, (error, data) => {
+    obs.sendCallback('SetStreamSettings', { settings: key }, (error, data) => {
       return res.json(key);
     });
   },
 };
 
-app.get("/obs", Dados.index);
-app.put("/obs", Dados.update);
-app.put("/render", Dados.render);
-app.post("/start", Dados.start);
-app.get("/status", Dados.status);
-app.post("/settings", Dados.SetStreamSettings);
-app.get("/settings", Dados.GetStreamSettings);
+app.get('/obs', Dados.index);
+app.put('/obs', Dados.update);
+app.put('/render', Dados.render);
+app.post('/start', Dados.start);
+app.get('/status', Dados.status);
+app.post('/settings', Dados.SetStreamSettings);
+app.get('/settings', Dados.GetStreamSettings);
+app.get('/audios', Dados.Audios);
 
 app.listen(3333);

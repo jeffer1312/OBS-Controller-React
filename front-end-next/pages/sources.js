@@ -102,19 +102,31 @@ export default function Sources(props) {
   // let valor = sourceRender.toString();
   //   console.log(`valor :${valor}`);
   return (
-    <Flex>
-      <Button>
+    <Flex gridArea='titleCena' flexDir='column'>
+      <Flex
+        flexWrap='wrap'
+        justifyContent='center'
+        width='100%'
+        gridArea='buttonCenas'
+      >
         {scenes.map(source => (
           <Button
-            visible={visibleSources.includes(source.name)}
+            height='200px'
+            width='200px'
+            borderRadius='100px'
+            margin='2%'
+            backgroundColor={
+              visibleSources.includes(source.name) ? '#1fc8db' : '#f00'
+            }
             key={source.name}
             onClick={() => res(source)}
           >
             {source.name}
           </Button>
         ))}
-      </Button>
-      <Link href='/'>Voltar</Link>
+
+        <Link href='/'>Voltar</Link>
+      </Flex>
     </Flex>
   );
 }

@@ -1,5 +1,6 @@
 //import '../ReactotronConfig';
 import '../styles/globals.css';
+import '../styles/modal.css';
 import { ChakraProvider } from '@chakra-ui/react';
 import { Grid, GridItem } from '@chakra-ui/react';
 //
@@ -12,7 +13,7 @@ function MyApp({ Component, pageProps }) {
         templateColumns='1fr 1fr 1fr 1fr'
         templateRows=' auto auto auto'
         templateAreas="   
-      'titleCena titleCena titleCena titleCena'      
+      '. titleCena titleCena .'      
       'buttonCenas buttonCenas buttonCenas buttonCenas'      
       'footer footer footer footer'      "
         justifyContent='center'
